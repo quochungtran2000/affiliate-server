@@ -15,6 +15,9 @@ export const config = {
   accessTrader: {
     accessKey: process.env.ACCESS_KEY,
   },
+  facebook: {
+    verifyToken: process.env.VERIFY_TOKEN,
+  },
 };
 
 export const DEFAULT_PAGE = 1;
