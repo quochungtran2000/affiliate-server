@@ -28,6 +28,34 @@ export class MessengerController {
       console.dir(body, { depth: null });
 
       if (body.object === 'page') {
+        body.entry.forEach((entry) => {
+          // Get the webhook event. entry.messaging is an array, but
+          // will only ever contain one event, so we get index 0
+          const webhook_event = entry.messaging[0];
+          this.logger.log(
+            `${this.postWebhook.name} Webhook Event: ${JSON.stringify(
+              webhook_event,
+            )}`,
+          );
+
+          const sender_psid = webhook_event.sender.id;
+          this.logger.log(
+            `${this.postWebhook.name} Sender PSID: :${sender_psid}`,
+          );
+
+          if (webhook_event.message) {
+            this.messengerService.handleMessage(
+              sender_psid,
+              webhook_event.message,
+            );
+          } else if (webhook_event.postback) {
+            this.messengerService.handlePostback(
+              sender_psid,
+              webhook_event.postback,
+            );
+          }
+        });
+
         // Returns a '200 OK' response to all requests
         res.status(200).send('EVENT_RECEIVED');
         // Determine which webhooks were triggered and get sender PSIDs and locale, message content and more.
