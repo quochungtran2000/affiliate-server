@@ -17,6 +17,10 @@ export const config = {
   },
   facebook: {
     verifyToken: process.env.VERIFY_TOKEN,
+    whitelistedDomains: [
+      'https://hunghamhoc.com',
+      'https://dev.hunghamhoc.com',
+    ],
   },
 };
 

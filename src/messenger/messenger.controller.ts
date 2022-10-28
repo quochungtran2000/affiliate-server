@@ -1,5 +1,5 @@
 import { MessengerService } from './messenger.service';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import {
   Controller,
   Get,
@@ -9,6 +9,7 @@ import {
   Query,
   Logger,
   HttpException,
+  Req,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { GetWebhookQueryDTO } from './dto/messenger.dto';
@@ -21,14 +22,14 @@ export class MessengerController {
   constructor(private readonly messengerService: MessengerService) {}
 
   @Post('/webhook')
-  postWebhook(@Body() body: any, @Res() res: Response) {
+  async postWebhook(@Body() body: any, @Res() res: Response) {
     try {
       this.logger.log(`${this.postWebhook.name} Body:${JSON.stringify(body)}`);
       this.logger.log(`\u{1F7EA} Received webhook:`);
       console.dir(body, { depth: null });
 
       if (body.object === 'page') {
-        body.entry.forEach((entry) => {
+        body.entry.forEach(async (entry) => {
           // Get the webhook event. entry.messaging is an array, but
           // will only ever contain one event, so we get index 0
           const webhook_event = entry.messaging[0];
@@ -44,12 +45,12 @@ export class MessengerController {
           );
 
           if (webhook_event.message) {
-            this.messengerService.handleMessage(
+            await this.messengerService.handleMessage(
               sender_psid,
               webhook_event.message,
             );
           } else if (webhook_event.postback) {
-            this.messengerService.handlePostback(
+            await this.messengerService.handlePostback(
               sender_psid,
               webhook_event.postback,
             );
@@ -57,11 +58,11 @@ export class MessengerController {
         });
 
         // Returns a '200 OK' response to all requests
-        res.status(200).send('EVENT_RECEIVED');
+        return res.status(200).send('EVENT_RECEIVED');
         // Determine which webhooks were triggered and get sender PSIDs and locale, message content and more.
       } else {
         // Return a '404 Not Found' if event is not from a page subscription
-        res.sendStatus(404);
+        return res.sendStatus(404);
       }
     } catch (error) {
       this.logger.error(`${this.postWebhook.name}: ${error.message}`);
@@ -94,6 +95,21 @@ export class MessengerController {
       return res.sendStatus(403);
     } catch (error) {
       this.logger.error(`${this.getWebhook.name}: ${error.message}`);
+      throw new HttpException(error, error.status || 500);
+    }
+  }
+
+  @Post('setup-messenger-profile')
+  async setupMessengerProfile(@Req() req: Request, @Res() res: Response) {
+    try {
+      this.logger.log(`${this.setupMessengerProfile.name} called`);
+      await this.messengerService.setupMessengerProfile();
+      return res.status(200).json({
+        success: true,
+        message: 'setup messenger profile successfully',
+      });
+    } catch (error) {
+      this.logger.error(`${this.setupMessengerProfile.name} called`);
       throw new HttpException(error, error.status || 500);
     }
   }
