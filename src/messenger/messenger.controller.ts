@@ -1,5 +1,8 @@
 import { MessengerService } from './messenger.service';
 import { Request, Response } from 'express';
+import { ApiTags } from '@nestjs/swagger';
+import { GetWebhookQueryDTO } from './dto/messenger.dto';
+import { config } from '../config/configuration';
 import {
   Controller,
   Get,
@@ -11,9 +14,6 @@ import {
   HttpException,
   Req,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { GetWebhookQueryDTO } from './dto/messenger.dto';
-import { config } from '../config/configuration';
 
 @ApiTags('Affiliate')
 @Controller('messenger')
