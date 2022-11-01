@@ -117,6 +117,11 @@ export const SetupMessengerProfileData = {
       call_to_actions: [
         {
           type: 'postback',
+          title: 'Ưu đãi từ highland coffee',
+          payload: POSTBACK.SEARCH_HIGHLAND_COUPON,
+        },
+        {
+          type: 'postback',
           title: 'Tra cứu theo nơi bán',
           payload: POSTBACK.SEARCH_BY_MERCHANT,
         },

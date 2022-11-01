@@ -34,6 +34,17 @@ export class AffiliateController {
     }
   }
 
+  // @Get('/merchant/:merchant/coupon')
+  // async getCouponByMerchant(@Res() res: Response) {
+  //   try {
+  //     this.logger.log(`${this.getCouponByMerchant.name} called`);
+  //     const result = await this.affiliateService.getCouponByMerchant();
+  //     return res.status(200).json(result);
+  //   } catch (error) {
+  //     this.logger.error(`${this.getCouponByMerchant.name}: ${error.message}`);
+  //     throw new HttpException(error, error.status || 500);
+  //   }
+  // }
   @ApiOperation({ summary: 'Lấy danh sách mã khuyễn mãi' })
   @Get('/coupon')
   async getCoupons(@Res() res: Response, @Query() query: GetCouponQueryDTO) {

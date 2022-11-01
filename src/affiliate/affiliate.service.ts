@@ -6,6 +6,7 @@ import {
   GetHotCouponQueryDTO,
 } from './dto/affiliate-query.dto';
 import * as queryString from 'query-string';
+import { MerchantRepo } from 'src/repository/merchant-repository';
 
 @Injectable()
 export class AffiliateService {
@@ -17,30 +18,33 @@ export class AffiliateService {
   //   },
   // };
 
-  constructor(private readonly httpService: HttpService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    private merchantRepo: MerchantRepo,
+  ) {}
 
-  async getMerchants() {
-    try {
-      Logger.log(`${this.getMerchants.name} called`);
-      // const merchants = await firstValueFrom(
-      //   this.httpService
-      //     .get(
-      //       `${this.affiliateApi}/offers_informations/merchant_list`,
-      //       this.headers,
-      //     )
-      //     .pipe(map((response) => response.data)),
-      // );
+  // async getMerchants() {
+  //   try {
+  //     Logger.log(`${this.getMerchants.name} called`);
+  //     // const merchants = await firstValueFrom(
+  //     //   this.httpService
+  //     //     .get(
+  //     //       `${this.affiliateApi}/offers_informations/merchant_list`,
+  //     //       this.headers,
+  //     //     )
+  //     //     .pipe(map((response) => response.data)),
+  //     // );
 
-      const { data: responseData } = await this.httpService
-        .get(`${this.affiliateApi}/offers_informations/merchant_list`)
-        .toPromise();
+  //     const { data: responseData } = await this.httpService
+  //       .get(`${this.affiliateApi}/offers_informations/merchant_list`)
+  //       .toPromise();
 
-      return responseData;
-    } catch (error) {
-      this.logger.error(`${this.getMerchants.name}: ${error.message}`);
-      throw new HttpException(`Can not get merchant list`, 400);
-    }
-  }
+  //     return responseData;
+  //   } catch (error) {
+  //     this.logger.error(`${this.getMerchants.name}: ${error.message}`);
+  //     throw new HttpException(`Can not get merchant list`, 400);
+  //   }
+  // }
 
   async getCoupons(query: GetCouponQueryDTO) {
     try {
@@ -86,6 +90,17 @@ export class AffiliateService {
         return data;
       });
       return result;
+    } catch (error) {
+      this.logger.error(`${this.getHotCoupon.name}: ${error.message}`);
+      throw new HttpException(`Can not get hot coupons`, 400);
+    }
+  }
+
+  async getMerchants() {
+    try {
+      this.logger.log(`${this.getMerchants.name} called`);
+      const [data, total] = await this.merchantRepo.getMerchants();
+      return { data, total };
     } catch (error) {
       this.logger.error(`${this.getHotCoupon.name}: ${error.message}`);
       throw new HttpException(`Can not get hot coupons`, 400);

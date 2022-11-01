@@ -3,6 +3,7 @@ import { DB_CON_TOKEN } from './database.constant';
 import { config } from '../config/configuration';
 import { USER } from 'src/models/entities/user';
 import { MESSENGER } from 'src/messenger/entities/messenger.entity';
+import { MERCHANT } from 'src/affiliate/entities/merchant.entity';
 
 export const databaseProviders = [
   {
@@ -16,7 +17,7 @@ export const databaseProviders = [
       return await createConnection({
         type: 'mongodb',
         url: `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_DATABASE}`,
-        entities: [USER, MESSENGER],
+        entities: [USER, MESSENGER, MERCHANT],
         useUnifiedTopology: true,
         useNewUrlParser: true,
         port: Number(MONGO_PORT),
